@@ -6,8 +6,10 @@ KERNEL_OFFSET equ 0x1000
 global _main
 _main:
     ; init stack
-    mov bp, 0x8000
+    mov bp, 0x9000
     mov sp, bp
+
+    mov [BOOT_DRIVE], dl
 
     call cls16
 
