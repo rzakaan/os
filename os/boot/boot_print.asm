@@ -20,7 +20,7 @@ cls_16bit:
 ;   prints the specified message to the screen
 ;
 ; Args
-;   bx (ptr)    - it is the base address for the string
+;   bx  - (ptr) it is the base address for the string
 ;
 print_16bit:
     pusha
@@ -68,12 +68,12 @@ print_nl_16bit:
 ;   prints value to the screen in hex format
 ;
 ; Attr
-;   ax  working register
-;   bx  usage for call print value
-;   cx  usage for looping index
+;   ax  - working register
+;   bx  - usage for call print value
+;   cx  - usage for looping index
 ;
 ; Args
-;   dx (ptr)    - data to be printed to the screen
+;   dx  - (ptr) data to be printed to the screen
 ;
 ; Notes
 ;   Dec - Hex  - 
