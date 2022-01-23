@@ -3,8 +3,8 @@
 
 KERNEL_OFFSET equ 0x1000 
 
-global _start
-_start:
+global _main
+_main:
     ; init stack
     mov bp, 0x8000
     mov sp, bp
