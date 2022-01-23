@@ -46,9 +46,9 @@ done:
 ;   no args
 ;
 ; Notes
-;   Dec - Hex  - Oct
-;   10  - 0x0A - 12 - Line Feed
-;   13  - 0x0D - 13 - Carriage Return
+;   Dec - Hex
+;   10  - 0x0A - Line Feed
+;   13  - 0x0D - Carriage Return
 ;
 print_nl_16bit:
     pusha
@@ -62,3 +62,55 @@ print_nl_16bit:
     
     popa
     ret
+
+;
+; About
+;   prints value to the screen in hex format
+;
+; Attr
+;   ax  working register
+;   bx  usage for call print value
+;   cx  usage for looping index
+;
+; Args
+;   dx (ptr)    - data to be printed to the screen
+;
+; Notes
+;   Dec - Hex  - 
+;   48  - 0x30 - '0'
+;   57  - 0x39 - '9'
+;   65  - 0x41 - 'A'
+;   70  - 0x46 - '9'
+
+print_hex_16bit:
+    pusha
+    push cx
+    mov cx, 0
+print_hex_loop:
+    cmp cx, 4           ; cx usage for looping
+    je print_hex_end
+
+    ; convert last char in dx to ascii
+    mov ax, dx
+    and ax, 0x000f      ; bitmask
+    add al, 0x30        ; '0'
+    cmp al, 0x39        ; if > 9 then represent 'A' to 'F'
+    jle print_hex_loop2
+    add al, 7           ; 'A' is ASCII 65 instead of 58, so 65-58=7
+
+print_hex_loop2:
+    mov bx, HEX + 5
+    sub bx, cx
+    mov [bx], al
+    ror dx, 4           ; rotate right -> 0x1234 -> 0x4123 -> 0x3412 -> 0x2341 -> 0x1234
+
+    add cx, 1
+    jmp print_hex_loop
+
+print_hex_end:
+    mov bx, HEX
+    call print_16bit
+    popa
+    ret
+
+HEX: db '0x0000',0
