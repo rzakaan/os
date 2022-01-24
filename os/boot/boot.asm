@@ -1,5 +1,5 @@
 [org 0x7c00]
-[bits 16]
+
 
 KERNEL_OFFSET equ 0x1000 
 
@@ -13,20 +13,18 @@ _main:
 
     call cls16
 
-    mov bx, AUTHOR
-    call print16
-    call print16_nl
-
     mov bx, MSG_INIT
     call print16
     call print16_nl
 
     call load_kernel
+    call switch_protected_mode
     jmp $
 
 _halt:
     hlt
 
+[bits 16]
 load_kernel:
     mov bx, MSG_LOAD_KERNEL
     call print16
@@ -39,14 +37,23 @@ load_kernel:
     call disk_load
     ret
 
+[bits 32]
+BEGIN_PM:    
+    mov ebx, MSG_PM
+    call print32
+    call KERNEL_OFFSET
+    
 
-%include "./print_16.asm"
+%include "./print16.asm"
+%include "./print32.asm"
 %include "./disk.asm"
+%include "./gdt.asm"
+%include "./switch_protected_mode.asm"
 
 BOOT_DRIVE: db 0
-AUTHOR: db "Author Riza Kaan Ucak", 0
-MSG_INIT: db "Started bootloader in real mode(16bit)", 0
-MSG_LOAD_KERNEL: db "Loading kernel ...", 0
+MSG_INIT: db "Started bootloader(16bit)", 0
+MSG_LOAD_KERNEL: db "Loading kernel into memory...", 0
+MSG_PM: db "Initalized 32bit Protected Mode"
 
 ; padding
 times 510 - ($-$$) db 0
