@@ -1,4 +1,6 @@
 gdt_start:
+
+gdt_null:
     dd 0x00
     dd 0x00
 

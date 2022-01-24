@@ -1,6 +1,5 @@
 [org 0x7c00]
 
-
 KERNEL_OFFSET equ 0x1000 
 
 global _main
@@ -18,11 +17,8 @@ _main:
     call print16_nl
 
     call load_kernel
-    call switch_protected_mode
+    ;call switch_protected_mode
     jmp $
-
-_halt:
-    hlt
 
 [bits 16]
 load_kernel:
@@ -37,7 +33,7 @@ load_kernel:
     call disk_load
     ret
 
-[bits 32]
+;[bits 32]
 BEGIN_PM:    
     mov ebx, MSG_PM
     call print32
