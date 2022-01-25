@@ -1,24 +1,20 @@
 [org 0x7c00]
+KERNEL_OFFSET equ 0x1000
 
-KERNEL_OFFSET equ 0x1000 
+mov [BOOT_DRIVE], dl
+mov bp, 0x9000
+mov sp, bp
 
-global _main
-_main:
-    ; init stack
-    mov bp, 0x9000
-    mov sp, bp
+call cls16
+call load_kernel
+call switch_pm
+jmp $
 
-    mov [BOOT_DRIVE], dl
-
-    call cls16
-
-    mov bx, MSG_INIT
-    call print16
-    call print16_nl
-
-    call load_kernel
-    ;call switch_protected_mode
-    jmp $
+%include "./print16.asm"
+%include "./print32.asm"
+%include "./disk.asm"
+%include "./gdt.asm"
+%include "./switch_pm.asm"
 
 [bits 16]
 load_kernel:
@@ -26,31 +22,20 @@ load_kernel:
     call print16
     call print16_nl
 
-    ; Read from disk and store in 0x1000
-    mov bx, KERNEL_OFFSET   ; bx -> destination
-    mov dh, 31              ; dh -> num sectors
-    mov dl, [BOOT_DRIVE]    ; dl -> disk
+    mov bx, KERNEL_OFFSET
+    mov dh, 16
+    mov dl, [BOOT_DRIVE]
     call disk_load
     ret
 
-;[bits 32]
-BEGIN_PM:    
-    mov ebx, MSG_PM
-    call print32
+[bits 32]
+BEGIN_PM:
     call KERNEL_OFFSET
-    
+    jmp $
 
-%include "./print16.asm"
-%include "./print32.asm"
-%include "./disk.asm"
-%include "./gdt.asm"
-%include "./switch_protected_mode.asm"
+BOOT_DRIVE db 0
+MSG_LOAD_KERNEL db "Loading kernel into memory...", 0
 
-BOOT_DRIVE: db 0
-MSG_INIT: db "Started bootloader(16bit)", 0
-MSG_LOAD_KERNEL: db "Loading kernel into memory...", 0
-MSG_PM: db "Initalized 32bit Protected Mode"
-
-; padding
+; padding and boot signature
 times 510 - ($-$$) db 0
 dw 0xaa55

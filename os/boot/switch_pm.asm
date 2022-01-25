@@ -1,14 +1,18 @@
+;
+; Switching Protected Mode
+;
+
 [bits 16]
-switch_protected_mode:
+switch_pm:
     cli
     lgdt [gdt_descriptor]
     mov eax, cr0
     or eax, 0x1             ; enable protected mode
     mov cr0, eax
-    jmp CODE_SEG:init_protected_mode
+    jmp CODE_SEG:init_pm
 
 [bits 32]
-init_protected_mode:
+init_pm:
     mov ax, DATA_SEG        ; update segment registers in GDT
     mov ds, ax
     mov ss, ax

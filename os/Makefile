@@ -24,6 +24,7 @@ CC='gcc'
 all: run
 
 clean:
+	rm ${BUILD}/*kernel -f
 	rm ${BUILD}/*.bin -f
 	rm ${BUILD}/*.o -f
 
@@ -35,6 +36,6 @@ build:
 	cd ${BOOT} && ${ASM} -f elf kernel_entry.asm -o ../${BUILD}/kernel_entry.o
 	
 	cd ${KERNEL} && ${CC} -g -m32 -fno-pie -ffreestanding -c kernel.c -o ../${BUILD}/kernel.o
-	cd ${BUILD} && ${LD} -m elf_i386 -Ttext 0x1000 --oformat binary -o kernel kernel.o kernel_entry.o 
+	cd ${BUILD} && ${LD} -m elf_i386 -Ttext 0x1000 -o kernel kernel.o kernel_entry.o --oformat binary
 
 	cd ${BUILD} && cat boot.bin kernel > os-image.bin
