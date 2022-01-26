@@ -1,4 +1,3 @@
-#include <stdint.h>
 #include "../libc/mem.h"
 
 /**
@@ -19,7 +18,7 @@ void memset(char* source, int ch, int n) {
     }
 }
 
-void* malloc(long size) {
+void* malloc(size_t size) {
     // ! implementation continues
 
     int ret = free_mem_addr;

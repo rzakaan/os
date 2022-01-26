@@ -19,7 +19,7 @@ ifeq ($(UNAME), Linux)
 	ASM='nasm'
 	GDB=gdb
 	CC=gcc
-	CFLAGS=-c -m32 -ffreestanding -fno-pie -g
+	CFLAGS=-c -g -Wall -m32 -ffreestanding -fno-pie
 	LD='ld'
 	LDFLAGS=-m elf_i386 -Ttext 0x1000 --oformat binary
 	VM=qemu-system-i386
