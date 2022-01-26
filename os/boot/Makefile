@@ -1,5 +1,7 @@
+BUILD=../build
 all: boot.bin kernel_entry.o
-	cp $^ ../build/
+	mkdir -p ${BUILD}
+	cp $^ ${BUILD}
 
 %.bin: %.asm
 	nasm $< -f bin -o $@

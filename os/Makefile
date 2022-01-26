@@ -5,8 +5,8 @@
 
 .PHONY: clean
 
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c)
-C_HEADERS = $(wildcard kernel/*.h drivers/*.h)
+C_SOURCES = $(wildcard kernel/*.c drivers/*.c libc/*.c)
+C_HEADERS = $(wildcard kernel/*.h drivers/*.h libc/*.h)
 C_OBJECTS = ${C_SOURCES:.c=.o}
 
 # Directories
@@ -34,31 +34,31 @@ ifeq ($(UNAME), Darwin)
 	VM=qemu-system-i386
 endif
 
-OS_IMAGE='os-image.bin'
+OS_IMAGE=os-image.bin
 
-all: mbr ${OS_IMAGE}
+all: bootloader ${OS_IMAGE}
 
-mbr: 
+bootloader: 
 	$(MAKE) -C boot/
 
 ${OS_IMAGE}: kernel.bin
-	cat ${BUILD}/boot.bin $^ > ${OS_IMAGE}
+	cat build/boot.bin $^ > ${OS_IMAGE}
 
-kernel.bin: ${C_OBJECTS}
-	${LD} ${LDFLAGS} $^ ${BUILD}/kernel_entry.o -o $@
-
-# used for debugging purposes
-kernel.elf: boot/kernel_entry.o ${C_OBJECTS}
+kernel.bin: ${BUILD}/kernel_entry.o ${C_OBJECTS}
 	${LD} ${LDFLAGS} $^ -o $@
 
-# compile kernel drivers
+# used for debugging purposes
+kernel.elf: ${C_OBJECTS}
+	${LD} ${LDFLAGS} build/kernel_entry.o $^ -o $@
+
+# compile c files : kernel, drivers
 %.o: %.c ${C_HEADERS}
 	${CC} ${CFLAGS} $< -o $@
 
 clean:
 	rm -f ${BUILD}/*.bin ${BUILD}/*.o ${BUILD}/${OS_IMAGE}
-	rm -f *.bin *.dis *.o ${OS_IMAGE} *.elf
-	rm -f kernel/*.o boot/*.bin drivers/*.o boot/*.o
+	rm -f *.bin *.o ${OS_IMAGE} 
+	rm -f boot/*.bin boot/*.o kernel/*.o drivers/*.o libc/*.o
 
 debug: ${OS_IMAGE} kernel.elf
 	${VM} -s -fda os-image.bin &
